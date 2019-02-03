@@ -1,6 +1,7 @@
 const Axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
-const { getBooks, getRatings, getBooksAndRatings } = require('../getBooksAndRatings.js');
+const Model = require('../models');
+const { getBooks, getRatings, storeBooksAndRatings } = require('../storeBooksAndRatings.js');
 
 let mockBooks;
 let getBooksAndRatingsMock;
@@ -27,8 +28,8 @@ beforeAll(() => {
       Name: 'Tell Me Your Dreams',
     }],
   };
-  mockBooksAndRatings = {
-    'J K Rowling': [{
+  mockBooksAndRatings = [
+    {
       Author: 'J K Rowling',
       id: 10,
       Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)',
@@ -38,8 +39,7 @@ beforeAll(() => {
       id: 20,
       Name: 'Harry Potter and the Chamber of Secrets (Harry Potter, #2)',
       rating: 4.62,
-    }],
-    'Sidney Sheldon': [{
+    }, {
       Author: 'Sidney Sheldon',
       id: 80,
       Name: 'If Tomorrow Comes (Tracy Whitney Series, #1)',
@@ -49,8 +49,7 @@ beforeAll(() => {
       id: 100,
       Name: 'Tell Me Your Dreams',
       rating: 4.62,
-    }],
-  };
+    }];
   getBooksAndRatingsMock = new MockAdapter(Axios);
   getBooksAndRatingsMock.onGet('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/allBooks').reply(200, mockBooks);
   mockRatingsObj = { rating: 4.62 };
@@ -73,12 +72,22 @@ describe('getRatings()', () => {
   });
 });
 
-describe('getBooksAndRatings()', () => {
-  it('should store books and ratings', async () => {
-    expect(await getBooksAndRatings()).toEqual(mockBooksAndRatings);
+describe('storeBooksAndRatings()', () => {
+  it('should store books and ratings', async (done) => {
+    await storeBooksAndRatings().then((booksAndRatingsArray) => {
+      Model.books.count().then((countInDatabase) => {
+        expect(booksAndRatingsArray.length).toEqual(countInDatabase);
+        done();
+      }).catch((errorObj) => {
+        console.log(errorObj.message);
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
   });
 });
 
 afterAll(() => {
   getBooksAndRatingsMock.restore();
+  Model.books.sequelize.close();
 });

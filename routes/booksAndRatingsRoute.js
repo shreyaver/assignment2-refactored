@@ -1,7 +1,7 @@
-const { storeBooksAndRatings } = require('../getBooksAndRatings.js');
+const { getBooksAndRatings } = require('../getBooksAndRatings.js');
 
 module.exports = [{
   method: 'GET',
   path: '/books',
-  handler: async (request, h) => h.response(await storeBooksAndRatings()).code(200),
+  handler: async (request, h) => h.response(await getBooksAndRatings()).code(200),
 }];

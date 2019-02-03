@@ -6,7 +6,7 @@
   "scripts": {
     "migrationDown": "./node_modules/.bin/sequelize db:migrate:undo:all",
     "migrationUp": "./node_modules/.bin/sequelize db:migrate",
-    "test": "NODE_ENV=test npm run migrationDown && NODE_ENV=test npm run migrationUp && NODE_ENV=test jest tests/booksModel.test.js"
+    "test": "NODE_ENV=test npm run migrationDown && NODE_ENV=test npm run migrationUp && NODE_ENV=test jest tests/storeBooksAndRatings.test.js"
   },
   "author": "Shreya Verma",
   "license": "ISC",

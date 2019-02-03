@@ -1,4 +1,5 @@
 const Axios = require('axios');
+const Model = require('./models');
 
 const getBooks = () => new Promise((resolve, reject) => {
   Axios.get('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/allBooks').then((booksArray) => {
@@ -20,24 +21,15 @@ const getRatings = () => new Promise((resolve, reject) => {
   });
 });
 
-const getBooksAndRatings = () => new Promise((resolve, reject) => {
+const storeBooksAndRatings = () => new Promise((resolve, reject) => {
   getRatings().then(({ booksArray, ratingsArray }) => {
     const booksRatingsArray = booksArray.map((book, index) => Object.assign(book, ratingsArray[index]));
-    const authorBooks = {};
-    booksRatingsArray.forEach((book) => {
-      if (authorBooks[book.Author] !== undefined) {
-        authorBooks[book.Author].push(book);
-      } else {
-        authorBooks[book.Author] = [book];
-      }
+    Promise.all(booksRatingsArray.map(book => Model.books.generate(book))).then(() => {
+      resolve(booksRatingsArray);
     });
-    Object.values(authorBooks).forEach((books) => {
-      books.sort((book1, book2) => book2.rating - book1.rating);
-    });
-    resolve(authorBooks);
   }).catch((errorObj) => {
     reject(errorObj.message);
   });
 });
 
-module.exports = { getBooks, getRatings, getBooksAndRatings };
+module.exports = { getBooks, getRatings, storeBooksAndRatings };
