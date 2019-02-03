@@ -31,6 +31,9 @@ const storeBooksAndRatings = () => new Promise((resolve, reject) => {
         authorBooks[book.Author] = [book];
       }
     });
+    Object.values(authorBooks).forEach((books) => {
+      books.sort((book1, book2) => book2.rating - book1.rating);
+    });
     resolve(authorBooks);
   }).catch((errorObj) => {
     reject(errorObj.message);
