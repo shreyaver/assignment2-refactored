@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "migrationDown": "./node_modules/.bin/sequelize db:migrate:undo:all",
+    "migrationUp": "./node_modules/.bin/sequelize db:migrate",
+    "test": "NODE_ENV=test npm run migrationDown && NODE_ENV=test npm run migrationUp && NODE_ENV=test jest tests/booksModel.test.js"
   },
   "author": "Shreya Verma",
   "license": "ISC",
