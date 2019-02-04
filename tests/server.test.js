@@ -136,6 +136,172 @@ describe('the "books/database" route', () => {
   });
 });
 
+describe('the "book/{id}/user/{id}" route', () => {
+  it('should give message if book with given id does not exist', async (done) => {
+    const options = {
+      method: 'POST',
+      url: '/book/10/user/20',
+      payload: {
+        likeOrDislike: 'like',
+      },
+    };
+    await server.inject(options).then((likeDislikeState) => {
+      expect(likeDislikeState.result).toEqual("Book with id: 10 doesn't exist");
+      done();
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+  it('should like book', async (done) => {
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    const options = {
+      method: 'POST',
+      url: '/book/10/user/20',
+      payload: {
+        likeOrDislike: 'like',
+      },
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await server.inject(options).then((likeDislikeState) => {
+        expect(likeDislikeState.result).toEqual('\nBook liked!');
+        done();
+      }).catch((errorObj) => {
+        console.log(errorObj.message);
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+  it('should give message if book already liked', async (done) => {
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    const options = {
+      method: 'POST',
+      url: '/book/10/user/20',
+      payload: {
+        likeOrDislike: 'like',
+      },
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, 20, 'like').then(async () => {
+        await server.inject(options).then((likeDislikeState) => {
+          expect(likeDislikeState.result).toEqual('\nBook already liked');
+          done();
+        }).catch((errorObj) => {
+          console.log(errorObj.message);
+        });
+      }).catch((errorObj) => {
+        console.log(errorObj.message);
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+  it('should remove dislike for book and add like', async (done) => {
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    const options = {
+      method: 'POST',
+      url: '/book/10/user/20',
+      payload: {
+        likeOrDislike: 'like',
+      },
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, 20, 'dislike').then(async () => {
+        await server.inject(options).then((likeDislikeState) => {
+          expect(likeDislikeState.result).toEqual('\nRemoved dislike\nBook liked!');
+          done();
+        }).catch((errorObj) => {
+          console.log(errorObj.message);
+        });
+      }).catch((errorObj) => {
+        console.log(errorObj.message);
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+  it('should dislike book', async (done) => {
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    const options = {
+      method: 'POST',
+      url: '/book/10/user/20',
+      payload: {
+        likeOrDislike: 'dislike',
+      },
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await server.inject(options).then((likeDislikeState) => {
+        expect(likeDislikeState.result).toEqual('\nBook disliked!');
+        done();
+      }).catch((errorObj) => {
+        console.log(errorObj.message);
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+  it('should give message if book already disliked', async (done) => {
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    const options = {
+      method: 'POST',
+      url: '/book/10/user/20',
+      payload: {
+        likeOrDislike: 'dislike',
+      },
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, 20, 'dislike').then(async () => {
+        await server.inject(options).then((likeDislikeState) => {
+          expect(likeDislikeState.result).toEqual('\nBook already disliked');
+          done();
+        }).catch((errorObj) => {
+          console.log(errorObj.message);
+        });
+      }).catch((errorObj) => {
+        console.log(errorObj.message);
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+  it('should remove like for book and add dislike', async (done) => {
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    const options = {
+      method: 'POST',
+      url: '/book/10/user/20',
+      payload: {
+        likeOrDislike: 'dislike',
+      },
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, 20, 'like').then(async () => {
+        await server.inject(options).then((likeDislikeState) => {
+          expect(likeDislikeState.result).toEqual('\nRemoved like\nBook disliked!');
+          done();
+        }).catch((errorObj) => {
+          console.log(errorObj.message);
+        });
+      }).catch((errorObj) => {
+        console.log(errorObj.message);
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+});
+
 afterAll(() => {
   getBooksAndRatingsMock.restore();
   Model.books.sequelize.close();
