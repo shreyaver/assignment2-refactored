@@ -7,8 +7,8 @@ let mockBooks;
 let getBooksAndRatingsMock;
 let mockRatingsObj;
 const mockRatingsArray = [];
-let mockBooksAndRatings;
-beforeAll(() => {
+beforeAll(async () => {
+  await Model.books.truncate();
   mockBooks = {
     books: [{
       Author: 'J K Rowling',
@@ -28,28 +28,6 @@ beforeAll(() => {
       Name: 'Tell Me Your Dreams',
     }],
   };
-  mockBooksAndRatings = [
-    {
-      Author: 'J K Rowling',
-      id: 10,
-      Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)',
-      rating: 4.62,
-    }, {
-      Author: 'J K Rowling',
-      id: 20,
-      Name: 'Harry Potter and the Chamber of Secrets (Harry Potter, #2)',
-      rating: 4.62,
-    }, {
-      Author: 'Sidney Sheldon',
-      id: 80,
-      Name: 'If Tomorrow Comes (Tracy Whitney Series, #1)',
-      rating: 4.62,
-    }, {
-      Author: 'Sidney Sheldon',
-      id: 100,
-      Name: 'Tell Me Your Dreams',
-      rating: 4.62,
-    }];
   getBooksAndRatingsMock = new MockAdapter(Axios);
   getBooksAndRatingsMock.onGet('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/allBooks').reply(200, mockBooks);
   mockRatingsObj = { rating: 4.62 };
@@ -74,9 +52,9 @@ describe('getRatings()', () => {
 
 describe('storeBooksAndRatings()', () => {
   it('should store books and ratings in database', async (done) => {
-    await storeBooksAndRatings().then((booksAndRatingsArray) => {
+    await storeBooksAndRatings().then((databaseInsertResponses) => {
       Model.books.count().then((countInDatabase) => {
-        expect(booksAndRatingsArray.length).toEqual(countInDatabase);
+        expect(databaseInsertResponses.length).toEqual(countInDatabase);
         done();
       }).catch((errorObj) => {
         console.log(errorObj.message);

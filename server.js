@@ -1,5 +1,6 @@
 const Hapi = require('hapi');
-const booksAndRatingsRoute = require('./routes/booksAndRatingsRoute.js');
+const storeBooksAndRatingsRoute = require('./routes/storeBooksAndRatingsRoute.js');
+const getBooksAndRatingsRoute = require('./routes/getBooksAndRatingsRoute.js');
 const pingRoute = require('./routes/pingRoute.js');
 
 const server = new Hapi.Server({
@@ -7,7 +8,7 @@ const server = new Hapi.Server({
   host: 'localhost',
 });
 
-server.route([...pingRoute, ...booksAndRatingsRoute]);
+server.route([...pingRoute, ...getBooksAndRatingsRoute, ...storeBooksAndRatingsRoute]);
 if (!module.parent) {
   server.start();
 }

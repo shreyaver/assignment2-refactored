@@ -24,8 +24,8 @@ const getRatings = () => new Promise((resolve, reject) => {
 const storeBooksAndRatings = () => new Promise((resolve, reject) => {
   getRatings().then(({ booksArray, ratingsArray }) => {
     const booksRatingsArray = booksArray.map((book, index) => Object.assign(book, ratingsArray[index]));
-    Promise.all(booksRatingsArray.map(book => Model.books.generate(book))).then(() => {
-      resolve(booksRatingsArray);
+    Promise.all(booksRatingsArray.map(book => Model.books.generate(book))).then((dataBaseInsertResponses) => {
+      resolve(dataBaseInsertResponses);
     });
   }).catch((errorObj) => {
     reject(errorObj.message);
