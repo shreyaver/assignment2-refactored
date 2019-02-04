@@ -73,7 +73,7 @@ describe('getRatings()', () => {
 });
 
 describe('storeBooksAndRatings()', () => {
-  it('should store books and ratings', async (done) => {
+  it('should store books and ratings in database', async (done) => {
     await storeBooksAndRatings().then((booksAndRatingsArray) => {
       Model.books.count().then((countInDatabase) => {
         expect(booksAndRatingsArray.length).toEqual(countInDatabase);
