@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     Author: DataTypes.STRING,
     Name: DataTypes.STRING,
     rating: DataTypes.DECIMAL,
+    likesDislikes: DataTypes.JSON,
   }, {});
   books.generate = bookObj => new Promise((resolve, reject) => {
     books.findOrCreate({ where: { id: bookObj.id }, defaults: bookObj })
@@ -21,6 +22,6 @@ module.exports = (sequelize, DataTypes) => {
         resolve(errorObj.message);
       });
   });
-
+  
   return books;
 };
