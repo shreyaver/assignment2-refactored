@@ -20,7 +20,7 @@ describe('books.generate()', () => {
 });
 describe('books.addLikeDislike()', () => {
   it('should give message if book with given id does not exist', async (done) => {
-    await Model.books.addLikeDislike(10, 20, 'like').then((likeDislikeState) => {
+    await Model.books.addLikeDislike(10, 'like').then((likeDislikeState) => {
       expect(likeDislikeState).toEqual("Book with id: 10 doesn't exist");
       done();
     }).catch((errorObj) => {
@@ -32,7 +32,7 @@ describe('books.addLikeDislike()', () => {
       Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'like').then((likeDislikeState) => {
+      await Model.books.addLikeDislike(bookObj.id, 'like').then((likeDislikeState) => {
         expect(likeDislikeState).toEqual('\nBook liked!');
         done();
       }).catch((errorObj) => {
@@ -47,8 +47,8 @@ describe('books.addLikeDislike()', () => {
       Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'like').then(async () => {
-        await Model.books.addLikeDislike(bookObj.id, 20, 'like').then((likeDislikeState) => {
+      await Model.books.addLikeDislike(bookObj.id, 'like').then(async () => {
+        await Model.books.addLikeDislike(bookObj.id, 'like').then((likeDislikeState) => {
           expect(likeDislikeState).toEqual('\nBook already liked');
           done();
         }).catch((errorObj) => {
@@ -66,8 +66,8 @@ describe('books.addLikeDislike()', () => {
       Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'dislike').then(async () => {
-        await Model.books.addLikeDislike(bookObj.id, 20, 'like').then((likeDislikeState) => {
+      await Model.books.addLikeDislike(bookObj.id, 'dislike').then(async () => {
+        await Model.books.addLikeDislike(bookObj.id, 'like').then((likeDislikeState) => {
           expect(likeDislikeState).toEqual('\nRemoved dislike\nBook liked!');
           done();
         }).catch((errorObj) => {
@@ -85,7 +85,7 @@ describe('books.addLikeDislike()', () => {
       Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'dislike').then((likeDislikeState) => {
+      await Model.books.addLikeDislike(bookObj.id, 'dislike').then((likeDislikeState) => {
         expect(likeDislikeState).toEqual('\nBook disliked!');
         done();
       }).catch((errorObj) => {
@@ -100,8 +100,8 @@ describe('books.addLikeDislike()', () => {
       Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'dislike').then(async () => {
-        await Model.books.addLikeDislike(bookObj.id, 20, 'dislike').then((likeDislikeState) => {
+      await Model.books.addLikeDislike(bookObj.id, 'dislike').then(async () => {
+        await Model.books.addLikeDislike(bookObj.id, 'dislike').then((likeDislikeState) => {
           expect(likeDislikeState).toEqual('\nBook already disliked');
           done();
         }).catch((errorObj) => {
@@ -119,8 +119,8 @@ describe('books.addLikeDislike()', () => {
       Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'like').then(async () => {
-        await Model.books.addLikeDislike(bookObj.id, 20, 'dislike').then((likeDislikeState) => {
+      await Model.books.addLikeDislike(bookObj.id, 'like').then(async () => {
+        await Model.books.addLikeDislike(bookObj.id, 'dislike').then((likeDislikeState) => {
           expect(likeDislikeState).toEqual('\nRemoved like\nBook disliked!');
           done();
         }).catch((errorObj) => {

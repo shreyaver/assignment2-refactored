@@ -140,7 +140,7 @@ describe('the "book/{id}/user/{id}" route', () => {
   it('should give message if book with given id does not exist', async (done) => {
     const options = {
       method: 'POST',
-      url: '/book/10/user/20',
+      url: '/book/10',
       payload: {
         likeOrDislike: 'like',
       },
@@ -158,7 +158,7 @@ describe('the "book/{id}/user/{id}" route', () => {
     };
     const options = {
       method: 'POST',
-      url: '/book/10/user/20',
+      url: '/book/10',
       payload: {
         likeOrDislike: 'like',
       },
@@ -180,13 +180,13 @@ describe('the "book/{id}/user/{id}" route', () => {
     };
     const options = {
       method: 'POST',
-      url: '/book/10/user/20',
+      url: '/book/10',
       payload: {
         likeOrDislike: 'like',
       },
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'like').then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, 'like').then(async () => {
         await server.inject(options).then((likeDislikeState) => {
           expect(likeDislikeState.result).toEqual('\nBook already liked');
           done();
@@ -206,13 +206,13 @@ describe('the "book/{id}/user/{id}" route', () => {
     };
     const options = {
       method: 'POST',
-      url: '/book/10/user/20',
+      url: '/book/10',
       payload: {
         likeOrDislike: 'like',
       },
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'dislike').then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, 'dislike').then(async () => {
         await server.inject(options).then((likeDislikeState) => {
           expect(likeDislikeState.result).toEqual('\nRemoved dislike\nBook liked!');
           done();
@@ -232,7 +232,7 @@ describe('the "book/{id}/user/{id}" route', () => {
     };
     const options = {
       method: 'POST',
-      url: '/book/10/user/20',
+      url: '/book/10',
       payload: {
         likeOrDislike: 'dislike',
       },
@@ -254,13 +254,13 @@ describe('the "book/{id}/user/{id}" route', () => {
     };
     const options = {
       method: 'POST',
-      url: '/book/10/user/20',
+      url: '/book/10',
       payload: {
         likeOrDislike: 'dislike',
       },
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'dislike').then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, 'dislike').then(async () => {
         await server.inject(options).then((likeDislikeState) => {
           expect(likeDislikeState.result).toEqual('\nBook already disliked');
           done();
@@ -280,13 +280,13 @@ describe('the "book/{id}/user/{id}" route', () => {
     };
     const options = {
       method: 'POST',
-      url: '/book/10/user/20',
+      url: '/book/10',
       payload: {
         likeOrDislike: 'dislike',
       },
     };
     await Model.books.generate(bookObj).then(async () => {
-      await Model.books.addLikeDislike(bookObj.id, 20, 'like').then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, 'like').then(async () => {
         await server.inject(options).then((likeDislikeState) => {
           expect(likeDislikeState.result).toEqual('\nRemoved like\nBook disliked!');
           done();

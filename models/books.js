@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     Author: DataTypes.STRING,
     Name: DataTypes.STRING,
     rating: DataTypes.DECIMAL,
-    likesDislikes: DataTypes.JSON,
+    likeOrDislike: DataTypes.STRING,
   }, {});
   books.generate = bookObj => new Promise((resolve, reject) => {
     books.findOrCreate({ where: { id: bookObj.id }, defaults: bookObj })
@@ -22,44 +22,43 @@ module.exports = (sequelize, DataTypes) => {
         resolve(errorObj.message);
       });
   });
-  books.addLikeDislike = (bookId, userId, likeOrDislike) => new Promise((resolve, reject) => {
+  books.addLikeDislike = (bookId, likeOrDislike) => new Promise((resolve, reject) => {
     books.findById(bookId).then((book) => {
       if (book === null) {
         resolve(`Book with id: ${bookId} doesn't exist`);
       } else {
-        const { likedBy, dislikedBy } = book.likesDislikes;
-        const likeIndexOfUser = likedBy.indexOf(userId);
-        const dislikeIndexOfUser = dislikedBy.indexOf(userId);
         let response = '';
         if (likeOrDislike === 'like') {
-          if (dislikeIndexOfUser > -1) {
-            dislikedBy.splice(dislikeIndexOfUser, 1);
-            response += '\nRemoved dislike';
-          }
-          if (likeIndexOfUser === -1) {
-            likedBy.push(userId);
-            response += '\nBook liked!';
-            books.update({ likesDislikes: book.likesDislikes }, { where: { id: bookId } }).then(() => {
-              resolve(response);
-            });
-          } else {
+          if (book.likeOrDislike === 'like') {
             response += '\nBook already liked';
             resolve(response);
-          }
-        } else {
-          if (likeIndexOfUser > -1) {
-            likedBy.splice(likeIndexOfUser, 1);
-            response += '\nRemoved like';
-          }
-          if (dislikeIndexOfUser === -1) {
-            dislikedBy.push(userId);
-            response += '\nBook disliked!';
-            books.update({ likesDislikes: book.likesDislikes }, { where: { id: bookId } }).then(() => {
-              resolve(response);
-            });
           } else {
+            const previousLikeOrDislike = book.likeOrDislike;
+            books.update({ likeOrDislike: 'like' }, { where: { id: bookId } }).then(() => {
+              if (previousLikeOrDislike === 'dislike') {
+                response += '\nRemoved dislike';
+              }
+              response += '\nBook liked!';
+              resolve(response);
+            }).catch((errorObj) => {
+              resolve(errorObj.message);
+            });
+          }
+        } else if (likeOrDislike === 'dislike') {
+          if (book.likeOrDislike === 'dislike') {
             response += '\nBook already disliked';
             resolve(response);
+          } else {
+            const previousLikeOrDislike = book.likeOrDislike;
+            books.update({ likeOrDislike: 'dislike' }, { where: { id: bookId } }).then(() => {
+              if (previousLikeOrDislike === 'like') {
+                response += '\nRemoved like';
+              }
+              response += '\nBook disliked!';
+              resolve(response);
+            }).catch((errorObj) => {
+              resolve(errorObj.message);
+            });
           }
         }
       }
