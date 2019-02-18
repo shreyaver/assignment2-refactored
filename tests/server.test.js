@@ -2,13 +2,13 @@ const Axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
 const Model = require('../models');
 const { server } = require('../server.js');
+const { ALL_BOOKS_URL, RATING_BY_ID_URL } = require('../constants');
 
 let mockBooks;
 let getBooksAndRatingsMock;
 let mockRatingsObj;
 const mockRatingsArray = [];
 let mockBooksAndRatings;
-let mockBooksAndRatingsDatabase;
 beforeAll(() => {
   mockBooks = {
     books: [{
@@ -76,12 +76,12 @@ beforeAll(() => {
       rating: 4.62,
     }];
   getBooksAndRatingsMock = new MockAdapter(Axios);
-  getBooksAndRatingsMock.onGet('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/allBooks').reply(200, mockBooks);
+  getBooksAndRatingsMock.onGet(ALL_BOOKS_URL).reply(200, mockBooks);
   mockRatingsObj = { rating: 4.62 };
   mockBooks.books.forEach((book) => {
     mockRatingsArray.push(mockRatingsObj);
   });
-  const url = new RegExp('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/findBookById/[0-9]+');
+  const url = new RegExp(`${RATING_BY_ID_URL}/[0-9]+`);
   getBooksAndRatingsMock.onGet(url).reply(200, mockRatingsObj);
 });
 beforeEach(() => Model.books.truncate());
@@ -116,10 +116,10 @@ describe('the "books" route', () => {
     expect(response.result).toEqual(mockBooksAndRatings);
   });
 });
-describe('the "books/database" route', () => {
+describe('the "books/create" route', () => {
   const options = {
     method: 'GET',
-    url: '/books/database',
+    url: '/books/create',
   };
   it('should respond with 200 for GET call', async () => {
     const response = await server.inject(options);
@@ -136,7 +136,7 @@ describe('the "books/database" route', () => {
   });
 });
 
-describe('the "book/{id}/user/{id}" route', () => {
+describe('the "book/{id}" route', () => {
   it('should give message if book with given id does not exist', async (done) => {
     const options = {
       method: 'POST',

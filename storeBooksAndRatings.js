@@ -1,8 +1,9 @@
 const Axios = require('axios');
 const Model = require('./models');
+const { ALL_BOOKS_URL, RATING_BY_ID_URL } = require('./constants');
 
 const getBooks = () => new Promise((resolve, reject) => {
-  Axios.get('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/allBooks').then((booksArray) => {
+  Axios.get(ALL_BOOKS_URL).then((booksArray) => {
     resolve(booksArray.data);
   }).catch((errorObj) => {
     reject(errorObj.message);
@@ -11,7 +12,7 @@ const getBooks = () => new Promise((resolve, reject) => {
 
 const getRatings = () => new Promise((resolve, reject) => {
   getBooks().then((booksArray) => {
-    Axios.all(booksArray.books.map(book => Axios.get(`https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/findBookById/${book.id}`))).then((ratingsObjArray) => {
+    Axios.all(booksArray.books.map(book => Axios.get(`${RATING_BY_ID_URL}/${book.id}`))).then((ratingsObjArray) => {
       resolve({ booksArray: booksArray.books, ratingsArray: ratingsObjArray.map(ratingsObj => ratingsObj.data) });
     }).catch((errorObj) => {
       reject(errorObj.message);

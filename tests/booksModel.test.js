@@ -17,6 +17,13 @@ describe('books.generate()', () => {
     await Model.books.generate(bookObj);
     expect(await Model.books.generate(bookObj)).toEqual(`Book with id: ${bookObj.id} already exists`);
   });
+  it('should catch error if there is attempt to insert entry with wrong datatype', async () => {
+    const bookObj = {
+      Author: null, id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    await Model.books.generate(bookObj);
+    expect(await Model.books.generate(bookObj)).toEqual('null value in column "Author" violates not-null constraint');
+  });
 });
 describe('books.addLikeDislike()', () => {
   it('should give message if book with given id does not exist', async (done) => {
@@ -126,6 +133,21 @@ describe('books.addLikeDislike()', () => {
         }).catch((errorObj) => {
           console.log(errorObj.message);
         });
+      }).catch((errorObj) => {
+        console.log(errorObj.message);
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+  it('should catch error if there is attempt to find id with string word', async (done) => {
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await Model.books.addLikeDislike('hello', 'like').then(async (likeDislikeState) => {
+        expect(likeDislikeState).toEqual('invalid input syntax for integer: "hello"');
+        done();
       }).catch((errorObj) => {
         console.log(errorObj.message);
       });

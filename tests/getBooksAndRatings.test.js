@@ -1,6 +1,7 @@
 const Axios = require('axios');
 const MockAdapter = require('axios-mock-adapter');
 const { getBooks, getRatings, getBooksAndRatings } = require('../getBooksAndRatings.js');
+const { ALL_BOOKS_URL, RATING_BY_ID_URL } = require('../constants');
 
 let mockBooks;
 let getBooksAndRatingsMock;
@@ -52,12 +53,12 @@ beforeAll(() => {
     }],
   };
   getBooksAndRatingsMock = new MockAdapter(Axios);
-  getBooksAndRatingsMock.onGet('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/allBooks').reply(200, mockBooks);
+  getBooksAndRatingsMock.onGet(ALL_BOOKS_URL).reply(200, mockBooks);
   mockRatingsObj = { rating: 4.62 };
   mockBooks.books.forEach((book) => {
     mockRatingsArray.push(mockRatingsObj);
   });
-  const url = new RegExp('https://5gj1qvkc5h.execute-api.us-east-1.amazonaws.com/dev/findBookById/[0-9]+');
+  const url = new RegExp(`${RATING_BY_ID_URL}/[0-9]+`);
   getBooksAndRatingsMock.onGet(url).reply(200, mockRatingsObj);
 });
 

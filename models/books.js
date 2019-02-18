@@ -62,6 +62,8 @@ module.exports = (sequelize, DataTypes) => {
           }
         }
       }
+    }).catch((errorObj) => {
+      resolve(errorObj.message);
     });
   });
   return books;
