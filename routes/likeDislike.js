@@ -14,6 +14,10 @@ module.exports = [{
         likeOrDislike: Joi.string().regex(/^like|dislike$/),
       },
     },
+    cors: {
+      origin: ['*'],
+      additionalHeaders: ['cache-control', 'x-requested-with'],
+    },
   },
   handler: async (request, h) => h.response(await Model.books.addLikeDislike(request.params.bookId, request.payload.likeOrDislike)).code(200),
 }];
