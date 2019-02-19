@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     Author: DataTypes.STRING,
     Name: DataTypes.STRING,
     rating: DataTypes.DECIMAL,
-    likeOrDislike: DataTypes.STRING,
+    liked: DataTypes.BOOLEAN,
   }, {});
   books.generate = async (bookObj) => {
     try {
@@ -24,33 +24,33 @@ module.exports = (sequelize, DataTypes) => {
       return (errorObj.message);
     }
   };
-  books.addLikeDislike = async (bookId, likeOrDislike) => {
+  books.addLikeDislike = async (bookId, liked) => {
     try {
       const book = await books.findById(bookId);
       if (book === null) {
         return (`Book with id: ${bookId} doesn't exist`);
       }
       let response = '';
-      if (likeOrDislike === 'like') {
-        if (book.likeOrDislike === 'like') {
+      if (liked === true) {
+        if (book.liked === true) {
           response += '\nBook already liked';
           return response;
         }
-        const previousLikeOrDislike = book.likeOrDislike;
-        await books.update({ likeOrDislike: 'like' }, { where: { id: bookId } });
-        if (previousLikeOrDislike === 'dislike') {
+        const previousLiked = book.liked;
+        await books.update({ liked: true }, { where: { id: bookId } });
+        if (previousLiked === false) {
           response += '\nRemoved dislike';
         }
         response += '\nBook liked!';
         return response;
-      } if (likeOrDislike === 'dislike') {
-        if (book.likeOrDislike === 'dislike') {
+      } if (liked === false) {
+        if (book.liked === false) {
           response += '\nBook already disliked';
           return response;
         }
-        const previousLikeOrDislike = book.likeOrDislike;
-        await books.update({ likeOrDislike: 'dislike' }, { where: { id: bookId } });
-        if (previousLikeOrDislike === 'like') {
+        const previousLiked = book.liked;
+        await books.update({ liked: false }, { where: { id: bookId } });
+        if (previousLiked === true) {
           response += '\nRemoved like';
         }
         response += '\nBook disliked!';
