@@ -10,61 +10,55 @@ module.exports = (sequelize, DataTypes) => {
     rating: DataTypes.DECIMAL,
     likeOrDislike: DataTypes.STRING,
   }, {});
-  books.generate = bookObj => new Promise((resolve, reject) => {
-    books.findOrCreate({ where: { id: bookObj.id }, defaults: bookObj })
-      .spread((user, created) => {
-        if (created === true) {
-          resolve(`Inserted book with id: ${bookObj.id}`);
-        } else {
-          resolve(`Book with id: ${bookObj.id} already exists`);
-        }
-      }).catch((errorObj) => {
-        resolve(errorObj.message);
-      });
-  });
-  books.addLikeDislike = (bookId, likeOrDislike) => new Promise((resolve, reject) => {
-    books.findById(bookId).then((book) => {
+  books.generate = async (bookObj) => {
+    try {
+      const result = await books.findOrCreate({ where: { id: bookObj.id }, defaults: bookObj })
+        .spread((user, created) => {
+          if (created === true) {
+            return `Inserted book with id: ${bookObj.id}`;
+          }
+          return `Book with id: ${bookObj.id} already exists`;
+        });
+      return result;
+    } catch (errorObj) {
+      return (errorObj.message);
+    }
+  };
+  books.addLikeDislike = async (bookId, likeOrDislike) => {
+    try {
+      const book = await books.findById(bookId);
       if (book === null) {
-        resolve(`Book with id: ${bookId} doesn't exist`);
-      } else {
-        let response = '';
-        if (likeOrDislike === 'like') {
-          if (book.likeOrDislike === 'like') {
-            response += '\nBook already liked';
-            resolve(response);
-          } else {
-            const previousLikeOrDislike = book.likeOrDislike;
-            books.update({ likeOrDislike: 'like' }, { where: { id: bookId } }).then(() => {
-              if (previousLikeOrDislike === 'dislike') {
-                response += '\nRemoved dislike';
-              }
-              response += '\nBook liked!';
-              resolve(response);
-            }).catch((errorObj) => {
-              resolve(errorObj.message);
-            });
-          }
-        } else if (likeOrDislike === 'dislike') {
-          if (book.likeOrDislike === 'dislike') {
-            response += '\nBook already disliked';
-            resolve(response);
-          } else {
-            const previousLikeOrDislike = book.likeOrDislike;
-            books.update({ likeOrDislike: 'dislike' }, { where: { id: bookId } }).then(() => {
-              if (previousLikeOrDislike === 'like') {
-                response += '\nRemoved like';
-              }
-              response += '\nBook disliked!';
-              resolve(response);
-            }).catch((errorObj) => {
-              resolve(errorObj.message);
-            });
-          }
-        }
+        return (`Book with id: ${bookId} doesn't exist`);
       }
-    }).catch((errorObj) => {
-      resolve(errorObj.message);
-    });
-  });
+      let response = '';
+      if (likeOrDislike === 'like') {
+        if (book.likeOrDislike === 'like') {
+          response += '\nBook already liked';
+          return response;
+        }
+        const previousLikeOrDislike = book.likeOrDislike;
+        await books.update({ likeOrDislike: 'like' }, { where: { id: bookId } });
+        if (previousLikeOrDislike === 'dislike') {
+          response += '\nRemoved dislike';
+        }
+        response += '\nBook liked!';
+        return response;
+      } if (likeOrDislike === 'dislike') {
+        if (book.likeOrDislike === 'dislike') {
+          response += '\nBook already disliked';
+          return response;
+        }
+        const previousLikeOrDislike = book.likeOrDislike;
+        await books.update({ likeOrDislike: 'dislike' }, { where: { id: bookId } });
+        if (previousLikeOrDislike === 'like') {
+          response += '\nRemoved like';
+        }
+        response += '\nBook disliked!';
+        return response;
+      }
+    } catch (errorObj) {
+      return errorObj.message;
+    }
+  };
   return books;
 };
