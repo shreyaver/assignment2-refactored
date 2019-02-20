@@ -119,4 +119,34 @@ describe('books.addLikeDislike()', () => {
     });
   });
 });
+describe('books.getBookLikedById()', () => {
+  it('should return liked state when not explicitly set', async (done) => { 
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await Model.books.getBookLikedById(bookObj.id).then((likeDislikeState) => {
+        expect(likeDislikeState).toEqual(false);
+        done();
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+  it('should return liked state when set to true', async (done) => { 
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, true).then(async () => {
+        await Model.books.getBookLikedById(bookObj.id).then((likeDislikeState) => {
+          expect(likeDislikeState).toEqual(true);
+          done();
+        });
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+});
 afterAll(() => Model.books.sequelize.close());

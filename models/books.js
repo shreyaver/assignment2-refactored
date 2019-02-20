@@ -60,5 +60,13 @@ module.exports = (sequelize, DataTypes) => {
       return errorObj.message;
     }
   };
+  books.getBookLikedById = async (bookId) => {
+    try {
+      const book = await books.findById(bookId);
+      return book.liked;
+    } catch (errorObj) {
+      return errorObj.message;
+    }
+  };
   return books;
 };

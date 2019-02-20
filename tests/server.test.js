@@ -136,7 +136,7 @@ describe('the "books/create" route', () => {
   });
 });
 
-describe('the "book/{id}" route', () => {
+describe('the "book/{id}" route with POST', () => {
   it('should give message if book with given id does not exist', async (done) => {
     const options = {
       method: 'POST',
@@ -200,7 +200,7 @@ describe('the "book/{id}" route', () => {
       console.log(errorObj.message);
     });
   });
-  
+
   it('should give message if book already disliked', async (done) => {
     const bookObj = {
       Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
@@ -251,7 +251,44 @@ describe('the "book/{id}" route', () => {
     });
   });
 });
-
+describe('the "book/{id}" route with GET', () => {
+  it('should return liked state when not explicitly set', async (done) => { 
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    const options = {
+      method: 'GET',
+      url: '/book/10',
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await server.inject(options).then((likeDislikeState) => {
+        expect(likeDislikeState.result).toEqual(false);
+        done();
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+  it('should return liked state when set to true', async (done) => { 
+    const bookObj = {
+      Author: 'J K Rowling', id: 10, Name: 'Harry Potter and the Sorcerers Stone (Harry Potter, #1)', rating: 4.45,
+    };
+    const options = {
+      method: 'GET',
+      url: '/book/10',
+    };
+    await Model.books.generate(bookObj).then(async () => {
+      await Model.books.addLikeDislike(bookObj.id, true).then(async () => {
+        await server.inject(options).then((likeDislikeState) => {
+          expect(likeDislikeState.result).toEqual(true);
+          done();
+        });
+      });
+    }).catch((errorObj) => {
+      console.log(errorObj.message);
+    });
+  });
+});
 afterAll(() => {
   getBooksAndRatingsMock.restore();
   Model.books.sequelize.close();
